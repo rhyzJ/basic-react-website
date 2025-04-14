@@ -47,22 +47,21 @@ git init</code></pre>
   <ol>
     <li>Create a new repo on GitHub</li>
     <li>Set the new remote URL</li>
-    <pre><code>git remote set-url origin https://github.com/your-username/new-repository.git
+    <pre><code>git remote add origin https://github.com/username-goes-here/new-repo.git
+
 </code></pre>
-    <li>Push changes</li>
+    <li>Make <code>main</code> branch and first commit</li>
     <pre><code>git push -u origin main
 </code></pre>
-    <li>Rename the project:</li>
-    <p>Open <code>package.json</code> and change the "name" field to your new project's name</p>
-    <pre><code>{
-  "name": "new-project-name",
-  "version": "1.0.0",
-  ...
-}</code></pre>
-<li>Install dependencies</li>
-    <pre><code>npm i</code></pre>
-<li>Run it!</li>
-    <pre><code>npm run dev</code></pre>
+<pre><code>git add .
+</code></pre>
+<pre><code>git commit -m "first commit"
+</code></pre>
+
+<li>Push changes</li>
+    <pre><code>git push --set-upstream origin main
+</code></pre>
+  
   </ol>
 
   <h2>🟠 Folder Structure 🟠</h2>
