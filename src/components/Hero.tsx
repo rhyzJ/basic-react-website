@@ -11,7 +11,7 @@ const Hero: React.FC = () => {
           Discover amazing content and explore our awesome features!
         </p>
         <a
-          href="#"
+          href="/form"
           className="bg-orange-600 text-white px-6 py-3 rounded-full hover:bg-orange-900 transition duration-300"
         >
           Get Started

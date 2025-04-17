@@ -24,6 +24,8 @@ const Home: React.FC = () => {
     "https://example.com/slide3",
   ];
 
+  console.log("HD Key:", import.meta.env.VITE_HD_API_KEY);
+
   return (
     <div>
       <Hero />

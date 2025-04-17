@@ -10,6 +10,7 @@ const Navbar: React.FC = () => {
   const navLinks = [
     { label: "Home", to: "/" },
     { label: "About", to: "/about" },
+    { label: "Form", to: "/form" },
   ];
 
   return (
