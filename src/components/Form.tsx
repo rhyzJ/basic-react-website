@@ -137,6 +137,45 @@ const Form: React.FC = () => {
         gates,
       } = hdData;
 
+      const hdSummaryLong = `
+        <table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px;">
+          <tr><td style="padding: 8px; font-weight: bold;">Type:</td><td>${type}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Profile:</td><td>${profile}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Strategy:</td><td>${strategy}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Authority:</td><td>${authority}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Definition:</td><td>${definition}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Incarnation Cross:</td><td>${incarnation_cross}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Signature:</td><td>${signature}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Not-self Theme:</td><td>${not_self_theme}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Channels:</td><td>${channels_short?.join(
+            ", "
+          )}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Centers:</td><td>${centers?.join(
+            ", "
+          )}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Cognition:</td><td>${cognition}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Perspective:</td><td>${perspective}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Motivation:</td><td>${motivation}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Transference:</td><td>${transference}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Distraction:</td><td>${distraction}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Circuitries:</td><td>${circuitries}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Gates:</td><td>${gates?.join(
+            ", "
+          )}</td></tr>
+          <tr><td style="padding: 8px; font-weight: bold;">Variables:</td><td>${variables}</td></tr>
+        </table>
+    `;
+      const hdSummaryShort = `
+        <table style="border-collapse: collapse; width: 100%; font-family: Arial, sans-serif; font-size: 14px; margin-top: 10px;">
+          <tr><td style="padding: 6px; font-weight: bold;">Type:</td><td>${type}</td></tr>
+          <tr><td style="padding: 6px; font-weight: bold;">Profile:</td><td>${profile}</td></tr>
+          <tr><td style="padding: 6px; font-weight: bold;">Strategy:</td><td>${strategy}</td></tr>
+          <tr><td style="padding: 6px; font-weight: bold;">Authority:</td><td>${authority}</td></tr>
+          <tr><td style="padding: 6px; font-weight: bold;">Signature:</td><td>${signature}</td></tr>
+          <tr><td style="padding: 6px; font-weight: bold;">Not-self Theme:</td><td>${not_self_theme}</td></tr>
+        </table>
+      `;
+
       // Step 2: Send email with HD data
       const emailResponse = await fetch("http://localhost:3000/send-email", {
         method: "POST",
@@ -148,7 +187,8 @@ const Form: React.FC = () => {
           phone: formData.phone,
           timezone: timezone.label,
           message: `New submission from ${formData.firstName} ${formData.lastName}`,
-          hdData,
+          hdSummaryLong,
+          hdSummaryShort,
         }),
       });
 
@@ -184,9 +224,9 @@ const Form: React.FC = () => {
             { field: 19, value: perspective },
             { field: 20, value: distraction },
             { field: 21, value: circuitries },
-            { field: 22, value: channels_long?.join(", ") },
-            { field: 23, value: gates?.join(", ") },
-            { field: 24, value: activationsString },
+            { field: 23, value: channels_long?.join(", ") },
+            { field: 24, value: gates?.join(", ") },
+            { field: 25, value: activationsString },
           ],
         },
       };

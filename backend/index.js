@@ -27,7 +27,15 @@ app.get("/", (req, res) => {
 // email sending route - email to thriving for new submission
 app.post("/send-email", async (req, res) => {
   console.log("Hit /send-email endpoint!");
-  const { name, email, message } = req.body;
+  const {
+    name,
+    email,
+    message,
+    phone,
+    timezone,
+    hdSummaryLong,
+    hdSummaryShort,
+  } = req.body;
 
   try {
     const transporter = nodemailer.createTransport({
@@ -41,33 +49,51 @@ app.post("/send-email", async (req, res) => {
     const test = await transporter.verify();
     console.log("Email service ready?", test);
 
-    // Email to YOU (the owner)
+    // email to thriving
     const ownerEmail = await transporter.sendMail({
       from: `"Website Form" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_TO, // your receiving email
+      to: process.env.EMAIL_TO,
       subject: "New Form Submission",
-      text: `
-        Name: ${name}
-        Email: ${email}
-        Message: ${message}
-      `,
+      html: `
+    <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+      <h2 style="color: #2c3e50;">New Form Submission from ${name}</h2>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone:</strong> ${phone}</p>
+      <p><strong>Timezone:</strong> ${timezone}</p>
+      <p><strong>Message:</strong><br>${message}</p>
+      <h3 style="margin-top: 20px; color: #2c3e50;">Human Design Summary:</h3>
+      ${hdSummaryLong}
+    </div>
+  `,
     });
 
     console.log("Owner email sent:", ownerEmail.messageId);
 
-    // Email to the USER (the welcome email!)
+    // email to user
     const welcomeEmail = await transporter.sendMail({
       from: `"Thri5ing" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Welcome to the Thr5ing family 🌟",
       html: `
-        <h2>Hey ${name.split(" ")[0]}!</h2>
-        <p>Thanks for submitting your details. We’re thrilled to have you here!</p>
-        <p>You’ll hear back from us soon with more insights based on your birth info.</p>
-        <p>In the meantime, grab a cuppa and get comfy 🫖✨</p>
-        <br>
-        <small>If this wasn’t you, no worries — just ignore this email.</small>
-      `,
+    <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+      <h2 style="color: #2c3e50;">Hey ${name.split(" ")[0]}!</h2>
+      <p style="margin-bottom: 12px;">
+        Thanks for submitting your details. We’re <strong>thrilled</strong> to have you here!
+      </p>
+      <p style="margin-bottom: 12px;">
+        Here's your basic profile summary based on what you submitted:
+      </p>
+      ${hdSummaryShort}
+      <div style="text-align: center; margin: 20px 0;">
+        <img src="https://miro.medium.com/v2/resize:fit:4800/format:webp/1*SSUv52U2amzS9DV2p25KDg@2x.jpeg" 
+             alt="Thri5ing Logo" 
+             style="width: 200px; height: auto; border-radius: 12px;" />
+      </div>
+      <p style="font-size: 12px; color: #666; margin-top: 20px;">
+        If this wasn’t you, no worries — just ignore this email. No action needed.
+      </p>
+    </div>
+  `,
     });
 
     console.log("Welcome email sent:", welcomeEmail.messageId);
@@ -106,7 +132,6 @@ app.post("/api/activecampaign", async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
-
 
 /////////////////////////////////////////////
 app.listen(PORT, () => {
