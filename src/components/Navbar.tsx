@@ -8,15 +8,16 @@ const Navbar: React.FC = () => {
   const toggleMenu = () => setIsOpen(!isOpen);
 
   const navLinks = [
-    { label: "Home", to: "/" },
     { label: "About", to: "/about" },
-    { label: "Form", to: "/form" },
+    { label: "Human Design Chart", to: "/form" },
+    { label: "Guidance", to: "/guidance" },
+
   ];
 
   return (
     <nav className="w-full sticky top-0 z-50 backdrop-blur-md shadow-md bg-amber-700/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-white">Website Name</h1>
+        <h1 className="text-2xl font-bold text-white">Thri5ing</h1>
 
         <button
           onClick={toggleMenu}
@@ -40,7 +41,7 @@ const Navbar: React.FC = () => {
         </ul>
       </div>
 
-      {/* Mobile dropdown */}
+      {/* mobile dropdown */}
       {isOpen && (
         <div className="md:hidden backdrop-blur-md ">
           <ul className="flex flex-col ">

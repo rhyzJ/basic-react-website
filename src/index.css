@@ -1,1 +1,35 @@
-@import "tailwindcss";
+@layer theme, base, components, utilities;
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import './styles/buttons.css';
+
+/* Custom Styles and Keyframes */
+@layer components {
+  /* Custom Keyframes */
+  @keyframes orbit {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Animation Classes */
+  .animate-orbit-slow {
+    animation: orbit 2.5s linear infinite;
+  }
+
+  .animate-orbit-slower {
+    animation: orbit 3.3s linear infinite;
+  }
+
+  .animate-orbit-fast {
+    animation: orbit 2s linear infinite;
+  }
+
+  .animate-orbit-faster {
+    animation: orbit 1.7s linear infinite;
+  }
+}

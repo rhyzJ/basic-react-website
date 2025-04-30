@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-// import Select from "react-select";
 import TimezoneSelect from "react-timezone-select";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import axios from "axios";
+import SubmitButton from "./SubmitButton";
 
 interface FormData {
   firstName: string;
@@ -21,8 +20,7 @@ interface FormData {
 
 const Form: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  // const [hdResult, setHdResult] = useState<any>(null);
-
+  const [emailError, setEmailError] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
     lastName: "",
@@ -67,6 +65,7 @@ const Form: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setEmailError(null);
 
     const location = `${formData.birthPlace}`;
 
@@ -176,25 +175,7 @@ const Form: React.FC = () => {
         </table>
       `;
 
-      // Step 2: Send email with HD data
-      const emailResponse = await fetch("http://localhost:3000/send-email", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...payload,
-          phone: formData.phone,
-          timezone: timezone.label,
-          message: `New submission from ${formData.firstName} ${formData.lastName}`,
-          hdSummaryLong,
-          hdSummaryShort,
-        }),
-      });
-
-      if (!emailResponse.ok) throw new Error("Email request failed");
-
-      // Step 3: Send data to ActiveCampaign
+      // Step 2: Send data to ActiveCampaign
       const activeCampaignData = {
         contact: {
           firstName: formData.firstName,
@@ -238,15 +219,34 @@ const Form: React.FC = () => {
       );
 
       if (activeCampaignResponse.status === 201) {
-        console.log("Contact successfully added to ActiveCampaign!");
+        const emailResponse = await fetch("http://localhost:3000/send-email", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...payload,
+            phone: formData.phone,
+            timezone: timezone.label,
+            message: `New submission from ${formData.firstName} ${formData.lastName}`,
+            hdSummaryLong,
+            hdSummaryShort,
+          }),
+        });
+        if (!emailResponse.ok) throw new Error("Email request failed");
       } else {
         throw new Error("Error adding contact to ActiveCampaign.");
       }
-
       toast.success("Form submitted and email sent!");
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error during form submission:", error);
-      toast.error("Something went wrong. Please try again.");
+      if (axios.isAxiosError(error) && error.response?.status === 422) {
+        setEmailError(
+          "That email address has already been used to make a chart. Please try another one."
+        );
+      } else {
+        toast.error("Something went wrong. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -260,7 +260,9 @@ const Form: React.FC = () => {
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block font-medium mb-1">First Name</label>
+            <label className="block font-medium mb-1">
+              First Name <span className="text-red-700"> * </span>
+            </label>
             <input
               type="text"
               name="firstName"
@@ -271,7 +273,9 @@ const Form: React.FC = () => {
             />
           </div>
           <div>
-            <label className="block font-medium mb-1">Last Name</label>
+            <label className="block font-medium mb-1">
+              Last Name <span className="text-red-700"> * </span>
+            </label>
             <input
               type="text"
               name="lastName"
@@ -284,7 +288,9 @@ const Form: React.FC = () => {
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Date of Birth</label>
+          <label className="block font-medium mb-1">
+            Date of Birth <span className="text-red-700"> * </span>
+          </label>
           <input
             type="date"
             name="dob"
@@ -296,7 +302,9 @@ const Form: React.FC = () => {
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Time of Birth (24h)</label>
+          <label className="block font-medium mb-1">
+            Time of Birth (24h) <span className="text-red-700"> * </span>
+          </label>
           <input
             type="time"
             name="birthTime"
@@ -308,7 +316,9 @@ const Form: React.FC = () => {
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Place of Birth</label>
+          <label className="block font-medium mb-1">
+            Place of Birth<span className="text-red-700"> * </span>
+          </label>
           <input
             type="text"
             name="birthPlace"
@@ -316,12 +326,17 @@ const Form: React.FC = () => {
             value={formData.birthPlace}
             placeholder="e.g. Wellington, New Zealand"
             className="w-full border px-3 py-2 rounded-md"
+            pattern="^[A-Za-z\s\-]+,\s?[A-Za-z\s\-]+$"
+            title="Format must be: Town/City, Country (e.g. Wellington, New Zealand)"
             required
           />
         </div>
 
         <div>
-          <label className="block font-medium mb-1">Best Email Address</label>
+          <label className="block font-medium mb-1">
+            Best Email Address <span className="text-red-700"> * </span>
+            <span className="text-sm italic text-red-700">We will send your chart to this email!</span>
+          </label>
           <input
             type="email"
             name="email"
@@ -329,6 +344,7 @@ const Form: React.FC = () => {
             value={formData.email}
             className="w-full border px-3 py-2 rounded-md"
             required
+            pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
           />
         </div>
 
@@ -358,26 +374,13 @@ const Form: React.FC = () => {
           />
         </div>
 
-        <div className="pt-4">
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white py-3 rounded-xl hover:bg-indigo-700 transition duration-200 flex justify-center items-center gap-2"
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <>
-                Calculating your chart...
-                <DotLottieReact
-                  className="w-15 h-15"
-                  src="https://lottie.host/8450e337-1ab7-4df7-8b45-152cc03733ba/gwDRlfi3nl.lottie"
-                  loop
-                  autoplay
-                />
-              </>
-            ) : (
-              "Submit"
-            )}
-          </button>
+        <div className="pt-4 flex flex-col">
+          <SubmitButton isLoading={isLoading} />
+          {emailError && (
+            <p className="text-red-500 text-sm mt-1 text-center pt-4">
+              {emailError}
+            </p>
+          )}
         </div>
       </form>
       <ToastContainer />

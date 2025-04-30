@@ -2,7 +2,7 @@ import React from "react";
 
 const Hero: React.FC = () => {
   return (
-    <section className="relative py-20 bg-[url('/colours.jpg')] bg-cover">
+    <section className="relative py-20 bg-[url('/thriving-swirls.png')] bg-cover">
       {/* overlay */}
       <div className="absolute inset-0 bg-black/40" />
       <div className="relative container mx-auto text-center text-white">

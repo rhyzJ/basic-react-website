@@ -122,13 +122,19 @@ app.post("/api/activecampaign", async (req, res) => {
       }
     );
 
-    if (response.status === 201) {
-      return res.status(201).json({ message: "Contact added successfully" });
-    } else {
-      return res.status(500).json({ error: "ActiveCampaign failed" });
-    }
+    return res.status(201).json({ message: "Contact added successfully" });
   } catch (error) {
-    console.error("Backend AC error:", error.response?.data || error.message);
+    const status = error.response?.status;
+    const message = error.response?.data?.message || error.message;
+
+    console.error("Backend AC error:", status, message);
+
+    if (status === 422) {
+      return res.status(422).json({
+        error: "Email already in use, please use a different one.",
+      });
+    }
+
     return res.status(500).json({ error: "Internal server error" });
   }
 });
